@@ -1,2 +1,148 @@
 # laot007.github.io
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>您的 IP 地址</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem 3rem;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 90%;
+            width: 400px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: #4a5568;
+            font-weight: 600;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 0.8rem;
+        }
+        .ip-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 1rem 0;
+            word-break: break-word;
+            font-family: 'Courier New', monospace;
+        }
+        .loading {
+            font-size: 1.2rem;
+            color: #718096;
+            margin: 1rem 0;
+        }
+        .error {
+            color: #e53e3e;
+            background: #fed7d7;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-size: 0.95rem;
+        }
+        .footer {
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #a0aec0;
+        }
+        .footer a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .footer a:hover {
+            text-decoration: underline;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🌐 您的公网 IP 地址</h1>
+        <div id="ipContainer">
+            <div class="loading" id="loading">正在获取 IP 地址...</div>
+            <div class="ip-display" id="ipAddress" style="display: none;"></div>
+            <div class="error" id="error" style="display: none;"></div>
+        </div>
+        <button id="refreshBtn">🔄 重新获取</button>
+        <div class="footer">
+            数据来源: <a href="https://www.ipify.org" target="_blank">ipify.org</a> |
+            通过 API 实时查询
+        </div>
+    </div>
+
+    <script>
+        // 获取显示元素的引用
+        const loadingEl = document.getElementById('loading');
+        const ipEl = document.getElementById('ipAddress');
+        const errorEl = document.getElementById('error');
+        const refreshBtn = document.getElementById('refreshBtn');
+
+        // 获取 IP 的函数
+        async function fetchIP() {
+            // 显示加载状态，隐藏之前的 IP 和错误
+            loadingEl.style.display = 'block';
+            ipEl.style.display = 'none';
+            errorEl.style.display = 'none';
+
+            try {
+                // 使用 ipify 的 JSON API (支持 HTTPS 和 CORS)
+                const response = await fetch('https://api.ipify.org?format=json');
+                if (!response.ok) {
+                    throw new Error(`HTTP 错误: ${response.status}`);
+                }
+                const data = await response.json();
+                // 显示 IP
+                ipEl.textContent = data.ip;
+                ipEl.style.display = 'block';
+                loadingEl.style.display = 'none';
+            } catch (err) {
+                // 显示错误信息
+                errorEl.textContent = `获取失败: ${err.message}`;
+                errorEl.style.display = 'block';
+                loadingEl.style.display = 'none';
+            }
+        }
+
+        // 页面加载时立即获取一次
+        fetchIP();
+
+        // 点击刷新按钮重新获取
+        refreshBtn.addEventListener('click', fetchIP);
+    </script>
+</body>
+</html>
